@@ -24,30 +24,6 @@ tags:
 # schemes:
 # - http
 paths:
-  /user/login:
-    get:
-      tags:
-      - user
-      summary: Logs user into the system
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        description: user information
-        required: true
-        schema:
-          $ref: '#/definitions/User'
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: object
-            properties:
-              token:
-                type: string
-        400:
-          description: Invalid username/password supplied
   /user/info:
     get:
       tags:
@@ -65,11 +41,18 @@ paths:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/User'
+            type: object
+            properties:
+              username: 
+                type: string
+              firstname:
+                type: string
+              lastname:
+                type: string
+              email:
+                type: string
         400:
-          description: Invalid username supplied
-        404:
-          description: User not found
+          description: Invalid token provided
   /user/following:
     get:
       tags:
@@ -128,6 +111,44 @@ paths:
           description: Unauthorized
         404:
           description: User not found
+  /user/login:
+    post:
+      tags:
+      - user
+      summary: Login user with username and password
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: user information
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: token generated after successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              token:
+                type: string
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error: 
+                type: string
   /user/register:
     post:
       tags:
@@ -146,6 +167,13 @@ paths:
       responses:
         200:
           description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              user:
+                $ref: '#/definitions/User'
         400:
           description: incomplete information
   /user/follow:
