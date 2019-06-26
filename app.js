@@ -28,9 +28,11 @@ app.use(bodyParser.json());
 
 // Routers Required
 const user = require('./routes/user');
+const upload = require('./routes/upload');
 
 // Router Information
 app.use('/user', user);
+app.use('/upload', upload);
 
 // Passport Middleware
 app.use(passport.initialize());

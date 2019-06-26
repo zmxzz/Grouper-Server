@@ -53,6 +53,11 @@ paths:
                 type: string
         400:
           description: Invalid token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
   /user/following:
     get:
       tags:
@@ -180,7 +185,7 @@ paths:
     post:
       tags:
       - user
-      summary: Follow given userId
+      summary: Follow given userId, return user gets followed
       produces:
       - application/json
       parameters:
@@ -201,6 +206,14 @@ paths:
       responses:
         200:
           description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              result:
+                $ref: '#/definitions/User'
+                
         401:
           description: unauthorized
         404:
@@ -209,7 +222,7 @@ paths:
     post:
       tags:
       - user
-      summary: Unfollow given userId
+      summary: Unfollow given userId, returns user gets unfollowed
       produces:
       - application/json
       parameters:
@@ -230,6 +243,13 @@ paths:
       responses:
         200:
           description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              result:
+                $ref: '#/definitions/User'
         401:
           description: unauthorized
         404:

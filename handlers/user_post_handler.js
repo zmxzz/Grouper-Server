@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user_model');
 const jwt = require('jsonwebtoken');
 const config = require('../config/database');
+const arrays = require('../utils/array');
 
 // Initialize new user
 module.exports.initUser = function(body) {
@@ -37,7 +38,7 @@ module.exports.authenticate = function(user, res) {
 // Follow the given userId
 module.exports.follow = function(request, response) {
     let username = decode(request.headers['authorization']).username;
-    let followId = request.body.followId;
+    let followId = request.body.followId + '';
     User.getUserByUsername(username)
     .then((user) => {
         return addFollowing(user, followId);
@@ -63,17 +64,35 @@ module.exports.unfollow = function(request, response) {
     // Get follower based on username
     // Get followee based on _id in the body
     let username = decode(request.headers['authorization']).username;
-    let followId = request.body.unfollowId;
+    let unfollowId = request.body.unfollowId + '';
     User.getUserByUsername(username)
     .then((user) => {
-
-    });
+        return removeFollowing(user, unfollowId);
+    })
+    .then(User.save)
+    .then((user) => {
+        return removeFollower(user, unfollowId);
+    })
+    .then(User.save)
+    .then((result) => { resolveWithSuccessStatus(response)(result); })
+    .catch((error) => { 
+        if (error === 400) {
+           rejectWithFailStatus(response)('Bad Request');
+        }
+        else {
+           rejectWithNotFoundStatus(response)('User Not Found');
+        }
+   });
 }
 
-// return a promise handling follow action
+// Add followee to follower.following list
+// Add follower to followee.follower list
+// Remove follower from followee.follower
+// Remove followee from follower.following
+// ---------------------------------------------------------------------------------
 function addFollowing(user, followId) {
     let addFollowing = new Promise((resolve, reject) => {
-        if (user.following.includes(followId)) {
+        if (user.following.includes(followId) || user._id + '' === followId) {
             reject(400);
         }
         user.following.push(followId);
@@ -93,6 +112,34 @@ function addFollower(user, followId) {
     });
     return addFollower;
 }
+
+function removeFollowing(user, unfollowId) {
+    let removeFollowing = new Promise((resolve, reject) => {
+        if (!user.following.includes(unfollowId)) {
+            console.log('not following id');
+            reject(400);
+        }
+        arrays.remove(user.following, unfollowId);
+        resolve(user);
+    });
+    return removeFollowing;
+}
+
+function removeFollower(user, unfollowId) {
+    let removeFollower = new Promise((resolve, reject) => {
+        User.getUserById(unfollowId)
+        .then((followUser) => {
+            arrays.remove(followUser.follower, user._id + '');
+            resolve(followUser);
+        })
+        .catch((error) => {
+            console.log(error);
+            reject(error);
+        });
+    });
+    return removeFollower;
+}
+// ---------------------------------------------------------------------------------
 
 // general resolve and reject function
 function generalResolve(res) {
