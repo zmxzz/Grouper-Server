@@ -29,11 +29,11 @@ app.use(bodyParser.urlencoded());
 
 // Routers Required
 const user = require('./routes/user');
-const upload = require('./routes/upload');
+const file = require('./routes/file');
 
 // Router Information
 app.use('/user', user);
-app.use('/upload', upload);
+app.use('/file', file);
 
 // Passport Middleware
 app.use(passport.initialize());
