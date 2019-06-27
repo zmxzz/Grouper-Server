@@ -25,6 +25,7 @@ app.use(cors());
 
 // Body Parser Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 // Routers Required
 const user = require('./routes/user');
