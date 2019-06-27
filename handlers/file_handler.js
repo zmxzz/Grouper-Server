@@ -49,4 +49,10 @@ module.exports.downloadFile = function(request, response) {
             status: 'File Not Found'
         });
     });
+};
+
+module.exports.deleteFile = function(request, response) {
+    files.deleteFile(request.query['filename'])
+    .then(() => { response.status(204).end(); })
+    .catch((error) => { response.status(404).send('File Not Found').end(); });
 }

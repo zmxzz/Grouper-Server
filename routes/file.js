@@ -11,6 +11,10 @@ router.post('/upload', upload.single('file'), (request, response, next) => {
 
 router.get('/download', (request, response, next) => {
     fileHandler.downloadFile(request, response);
-})
+});
+
+router.delete('/delete', (request, response, next) => {
+    fileHandler.deleteFile(request, response);
+});
 
 module.exports = router;

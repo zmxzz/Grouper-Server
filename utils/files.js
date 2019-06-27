@@ -2,6 +2,21 @@ const fileStream = require('fs');
 const config = require('../config/filebase');
 const ftp = require('ftp');
 
+module.exports.putFileToFileServer = function(fileBuffer, directory, filename) {
+    // Generate folder and put file
+    let putFileToFileServer = new Promise((resolve, reject) => {
+        generateFolder(directory)
+        .then(() => {
+            return putFile(fileBuffer, directory + '/' + filename);
+        })
+        .then(() => {
+            resolve(); 
+        })
+        .catch((error) => { reject(error); });
+    });
+    return putFileToFileServer;
+}
+
 module.exports.getFileFromFileServer = function(filename) {
     // Returns a promise when retrieve file
     let getFileFromFileServer = new Promise((resolve, reject) => {
@@ -23,19 +38,70 @@ module.exports.getFileFromFileServer = function(filename) {
     return getFileFromFileServer;
 }
 
-module.exports.putFileToFileServer = function(fileBuffer, directory, filename) {
-    // Generate folder and put file
-    let putFileToFileServer = new Promise((resolve, reject) => {
-        generateFolder(directory)
-        .then(() => {
-            return putFile(fileBuffer, directory + '/' + filename);
-        })
-        .then(() => {
-            resolve(); 
-        })
-        .catch((error) => { reject(error); });
+module.exports.deleteFile = function(filename) {
+    let deleteFile = new Promise((resolve, reject) => {
+        deleteLocalFile(filename)
+        .then(() => { return deleteServerFile(filename); })
+        .then(resolve)
+        .catch(reject);
     });
-    return putFileToFileServer;
+    return deleteFile;
+}
+
+// generate file directory for the given file
+module.exports.generateDirectory = function(date) {
+    let filenameArr = [];
+    filenameArr.push(date.getFullYear());
+    filenameArr.push((date.getMonth() + 1));
+    filenameArr.push(date.getDate());
+    return filenameArr.join('/');
+};
+
+// generate filename for the given file
+module.exports.generateFilename = function(date) {
+    return date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds() + '-' + date.getMilliseconds();
+};
+
+// get files suffix
+// parse suffix of the filename
+module.exports.getSuffix = function(filename) {
+    let parts = filename.split('.');
+    return parts.pop();
+};
+
+// Helper Function for deleteFileFromServer
+function deleteLocalFile(filename) {
+    let deleteLocalFile = new Promise((resolve, reject) => {
+        let cacheName = getCacheName(filename);
+        fileStream.unlink(cacheName, (error) => {
+            if (error) {
+                console.log(error);
+            }
+        });
+        resolve();
+    });
+    return deleteLocalFile;
+}
+
+// Helper Function for deleteFileFromServer
+// Try to delete files on server, if not found, reject;
+function deleteServerFile(filename) {
+    let deleteServerFile = new Promise((resolve, reject) => {
+        let cloudName = getCloudName(filename);
+        let ftpClient = new ftp();
+        ftpClient.on('ready', () => {
+            ftpClient.delete(cloudName, (error) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    resolve();
+                }
+            });
+        });
+        connect(ftpClient);
+    });
+    return deleteLocalFile;
 }
 
 // If the folder does not exist, generate it
@@ -128,31 +194,4 @@ function getCacheName(filename) {
 // reformat filename info cloud filename
 function getCloudName(filename) {
     return './files/' + filename;
-}
-
-// generate file directory for the given file
-module.exports.generateDirectory = function(date) {
-    let filenameArr = [];
-    filenameArr.push(date.getFullYear());
-    filenameArr.push((date.getMonth() + 1));
-    filenameArr.push(date.getDate());
-    return filenameArr.join('/');
-};
-
-// generate filename for the given file
-module.exports.generateFilename = function(date) {
-    return date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds() + '-' + date.getMilliseconds();
-};
-
-// get files suffix
-// parse suffix of the filename
-module.exports.getSuffix = function(filename) {
-    let parts = filename.split('.');
-    return parts.pop();
-}
-
-function getFolder(filename) {
-    let folders = filename.split('/');
-    folders.pop();
-    return folders.join('/');
 }
