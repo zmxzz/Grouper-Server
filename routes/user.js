@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const config = require('../config/database');
-const User = require('../models/user_model');
 const UserPostHandler = require('../handlers/user_post_handler');
 const UserGetHandler = require('../handlers/user_get_handler');
-
+const TweetPostHandler = require('../handlers/tweet_post_handler');
+const CommentPostHandler = require('../handlers/comment_post_handler');
 // GET Methods -----------------------------------------------------
 router.get('/info', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.getBasicInfo(request, response);
@@ -40,6 +38,40 @@ router.post('/follow', passport.authenticate('jwt', {session: false}), (request,
 // Unfollow
 router.post('/unfollow', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserPostHandler.unfollow(request, response);
+});
+
+// Post new tweet
+router.post('/tweet', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    let tweet = TweetPostHandler.initTweet(request);
+    TweetPostHandler.postOriginalTweet(tweet, response);
+});
+
+// Retweet
+router.post('/retweet', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    let tweet = TweetPostHandler.initTweet(request);
+    TweetPostHandler.postRetweet(tweet, response);
+});
+
+// Comment
+router.post('/comment', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    let comment = CommentPostHandler.initComment(request);
+    TweetPostHandler.increaseCommentCount(comment.tweet)
+    .then((tweet) => {
+        CommentPostHandler.postComment(comment, tweet, response);
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+});
+
+// Like
+router.post('/like', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    TweetPostHandler.like(request, response);
+});
+
+// Unlike
+router.post('/unlike', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    TweetPostHandler.unlike(request, response);
 });
 
 module.exports = router;

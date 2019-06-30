@@ -56,12 +56,12 @@ const User = module.exports = mongoose.model('User', UserSchema);
 // Register user to database
 module.exports.register = function(user) {
     let register = new Promise((resolve, reject) => {
-        user.save((err, res) => {
-            if (err) {
-                reject(err);
+        user.save((error, result) => {
+            if (error) {
+                reject(error);
             }
             else {
-                resolve(res);
+                resolve(result);
             }
         })
     });
@@ -71,12 +71,12 @@ module.exports.register = function(user) {
 // save user to database
 module.exports.save = function(user) {
     let save = new Promise((resolve, reject) => {
-        user.save((err, res) => {
-            if (err) {
-                reject(err);
+        user.save((error, result) => {
+            if (error) {
+                reject(error);
             }
             else {
-                resolve(res);
+                resolve(result);
             }
         })
     });
@@ -110,7 +110,7 @@ module.exports.getUserById = function(id) {
             else {
                 resolve(response);
             }
-        })
+        });
     });
     return find;
 }

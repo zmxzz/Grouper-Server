@@ -1,5 +1,6 @@
 const files = require('../utils/files');
 const fileStream = require('fs');
+const responseUtil = require('../utils/response');
 
 module.exports.uploadFile = function(request, response) {
     let date = new Date();
@@ -11,16 +12,10 @@ module.exports.uploadFile = function(request, response) {
     files.putFileToFileServer(request.file.buffer, directory, filename)
     .then((result) => {
         filename = directory + '/' + filename;
-        return response.status(200).json({
-            success: true,
-            filename: filename
-        });
+        return responseUtil.contentCreated(filename, response);
     })
     .catch((error) => {
-        return response.status(400).json({
-            success: false,
-            error: error
-        });
+        return responseUtil.badRequest(error, response);
     });
 };
 
@@ -35,24 +30,24 @@ module.exports.downloadFile = function(request, response) {
                 "Content-Type": "application/octet-stream",
                 "Content-Disposition": 'inline'
               });
-              fileStream.createReadStream(cacheName).pipe(response);
+              return fileStream.createReadStream(cacheName).pipe(response);
             } else {
-              response.writeHead(400, {"Content-Type": "text/plain"});
-              response.end("ERROR File does not exist");
+              return responseUtil.badRequest('ERROR File does not exist', response);
             }
           });
         }
     )
     .catch((error) => {
-        response.status(404).json({
-            success: false,
-            status: 'File Not Found'
-        });
+        return responseUtil.contentNotFound('File Not Found', response);
     });
 };
 
 module.exports.deleteFile = function(request, response) {
     files.deleteFile(request.query['filename'])
-    .then(() => { response.status(204).end(); })
-    .catch((error) => { response.status(404).send('File Not Found').end(); });
+    .then(() => { 
+        return responseUtil.noContent(response);
+     })
+    .catch((error) => { 
+        return responseUtil.contentNotFound('File Not Found', response);
+     });
 }

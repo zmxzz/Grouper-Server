@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user_model');
 const jwt = require('jsonwebtoken');
 const config = require('../config/database');
+const responseUtil = require('../utils/response');
 
 // Decode token
 // Query user, return basic information
@@ -37,33 +38,28 @@ module.exports.getFollower = function(request, response) {
 
 // Helper function to respond basic information
 function sendUserBasicInfo(response, user) {
-    response.status(200).json({
+    let result = {
         username: user.username,
         firstname: user.firstname ? user.firstname : "",
         lastname: user.lastname ? user.lastname : "",
         email: user.email
-    });
+    };
+    return responseUtil.contentCreated(response, result);
 }
 
 // Helper function to respond followings
 function sendUserFollowings(response, user) {
-    response.status(200).json({
-        following: user.following
-    });
+    return responseUtil.contentFound(response,  {following: user.following });
 }
 
 // Helper function to respond followers
 function sendUserFollowers(response, user) {
-    response.status(200).json({
-        follower: user.follower
-    });
+    return responseUtil.contentFound(response, { follower: user.follower });
 }
 
 // Helper function respondes with error information
 function sendError(response, error) {
-    response.status(400).json({
-        error: error
-    });
+    return responseUtil.badRequest(response, error);
 }
 
 function decode(token) {
