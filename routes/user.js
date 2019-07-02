@@ -74,4 +74,9 @@ router.post('/unlike', passport.authenticate('jwt', {session: false}), (request,
     TweetPostHandler.unlike(request, response);
 });
 
+// Start Chat
+router.post('/startChat', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    ChatPostHandler.start(request, response);
+})
+
 module.exports = router;
