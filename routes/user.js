@@ -5,6 +5,8 @@ const UserPostHandler = require('../handlers/user_post_handler');
 const UserGetHandler = require('../handlers/user_get_handler');
 const TweetPostHandler = require('../handlers/tweet_post_handler');
 const CommentPostHandler = require('../handlers/comment_post_handler');
+const ChatPostHandler = require('../handlers/chat_post_handler');
+const ChatGetHandler = require('../handlers/chat_get_handler');
 // GET Methods -----------------------------------------------------
 router.get('/info', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.getBasicInfo(request, response);
@@ -16,6 +18,14 @@ router.get('/following', passport.authenticate('jwt', {session: false}), (reques
 
 router.get('/follower', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.getFollower(request, response);
+});
+
+router.get('/chat', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    ChatGetHandler.getChat(request, response);
+});
+
+router.get('/message', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    ChatGetHandler.getMessage(request, response);
 });
 
 // POST Methods ----------------------------------------------------
@@ -77,6 +87,11 @@ router.post('/unlike', passport.authenticate('jwt', {session: false}), (request,
 // Start Chat
 router.post('/startChat', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     ChatPostHandler.start(request, response);
+});
+
+// Send Message
+router.post('/sendMessage', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    ChatPostHandler.sendMessage(request, response);
 })
 
 module.exports = router;

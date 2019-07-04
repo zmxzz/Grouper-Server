@@ -81,18 +81,18 @@ module.exports.save = function(user) {
         })
     });
     return save;
-}
+};
 
 // Find user by username
 module.exports.getUserByUsername = function(username) {
     const query = { username: username };
     let find = new Promise((resolve, reject) => {
-        User.findOne(query, (error, response) => {
+        User.findOne(query, (error, result) => {
             if (error) {
                 reject(error);
             }
             else {
-                resolve(response);
+                resolve(result);
             }
         });
     });
@@ -103,12 +103,12 @@ module.exports.getUserByUsername = function(username) {
 module.exports.getUserById = function(id) {
     const query = { _id: id };
     let find = new Promise((resolve, reject) => {
-        User.findOne(query, (error, response) => {
+        User.findOne(query, (error, result) => {
             if (error) {
                 reject(error);
             }
             else {
-                resolve(response);
+                resolve(result);
             }
         });
     });

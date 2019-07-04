@@ -7,12 +7,12 @@ const MessageSchema = mongoose.Schema({
     }
 });
 
-// Export Chat model
+// Export Message model
 const Message = module.exports = mongoose.model('Message', MessageSchema);
 
-// Add, save Chat
+// Add, save message
 module.exports.save = function(message) {
-    let save = new Promise((resolve, response) => {
+    let save = new Promise((resolve, reject) => {
         message.save((error, result) => {
             message.save((error, result) => {
                 if (error) {
@@ -25,4 +25,24 @@ module.exports.save = function(message) {
         });
     });
     return save;
-} 
+};
+
+// Retrieve message
+module.exports.getMessageById = function(id) {
+    const query = { _id: id };
+    let find = new Promise((resolve, reject) => {
+        Message.findOne(query, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            else if (!result) {
+                reject('Message Not Found')
+            }
+            else {
+                resolve(result);
+            }
+        });
+    });
+    return find;
+};
+

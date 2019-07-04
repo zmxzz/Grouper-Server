@@ -44,7 +44,7 @@ function sendUserBasicInfo(response, user) {
         lastname: user.lastname ? user.lastname : "",
         email: user.email
     };
-    return responseUtil.contentCreated(response, result);
+    return responseUtil.contentFound(response, result);
 }
 
 // Helper function to respond followings

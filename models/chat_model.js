@@ -30,3 +30,22 @@ module.exports.save = function(chat) {
     });
     return save;
 };
+
+// Find chat by id
+module.exports.getChatById = function(id) {
+    const query = { _id: id };
+    let find = new Promise((resolve, reject) => {
+        Chat.findOne(query, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            else if (!result) {
+                reject('Chat Not Found');
+            }
+            else {
+                resolve(result);
+            }
+        });
+    });
+    return find;
+}
