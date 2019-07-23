@@ -1,4 +1,4 @@
 module.exports = {
-    database: 'mongodb+srv://zmxzz:946983Yy2.2@cluster0-kglm1.mongodb.net/Twitter?retryWrites=true&w=majority',
+    database: 'mongodb://localhost:27017/Grouper',
     secret: 'twitter_secret'
 }

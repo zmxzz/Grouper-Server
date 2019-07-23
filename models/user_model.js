@@ -24,11 +24,11 @@ const UserSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    following: [{
+    friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    follower: [{
+    friendRequests: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
@@ -91,6 +91,9 @@ module.exports.getUserByUsername = function(username) {
             if (error) {
                 reject(error);
             }
+            else if (result === null) {
+                reject('User not found');
+            }
             else {
                 resolve(result);
             }
@@ -106,6 +109,9 @@ module.exports.getUserById = function(id) {
         User.findOne(query, (error, result) => {
             if (error) {
                 reject(error);
+            }
+            else if (result === null) {
+                reject('User not found');
             }
             else {
                 resolve(result);

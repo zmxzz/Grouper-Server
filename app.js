@@ -4,6 +4,9 @@ const cors = require('cors');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const config = require('./config/database');
+const http = require('http');
+
+console.log(http.globalAgent.maxSockets);
 
 // Connecting to database configged at config/database.js
 mongoose.connect(config.database, { useNewUrlParser: true });
@@ -30,10 +33,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Routers Required
 const user = require('./routes/user');
 const file = require('./routes/file');
+const activity = require('./routes/activity');
 
 // Router Information
 app.use('/user', user);
 app.use('/file', file);
+app.use('/activity', activity);
+
 
 // Passport Middleware
 app.use(passport.initialize());

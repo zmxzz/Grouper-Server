@@ -15,6 +15,10 @@ module.exports.noContent = function(response) {
     return response.status(204).end();
 };
 
+module.exports.forbidden = function(response, error) {
+    return response.status(403).json(createdResponse.createError(false, error));
+}
+
 module.exports.contentNotFound = function(response, error) {
     return response.status(404).json(createdResponse.createError(false, error));
 };

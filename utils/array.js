@@ -7,6 +7,15 @@ module.exports.remove = function(arr, target) {
     arr.pop();
 }
 
+module.exports.removeAll = function(arr, target) {
+    let index = find(arr, target);
+    while (index !== -1) {
+        arr[index] = arr[arr.length - 1];
+        arr.pop();
+        index = find(arr, target);
+    }
+}
+
 function find(arr, target) {
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] == target) {

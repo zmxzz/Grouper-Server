@@ -12,10 +12,10 @@ module.exports.uploadFile = function(request, response) {
     files.putFileToFileServer(request.file.buffer, directory, filename)
     .then((result) => {
         filename = directory + '/' + filename;
-        return responseUtil.contentCreated(filename, response);
+        return responseUtil.contentCreated(response, filename);
     })
     .catch((error) => {
-        return responseUtil.badRequest(error, response);
+        return responseUtil.badRequest(response, error);
     });
 };
 
@@ -32,13 +32,13 @@ module.exports.downloadFile = function(request, response) {
               });
               return fileStream.createReadStream(cacheName).pipe(response);
             } else {
-              return responseUtil.badRequest('ERROR File does not exist', response);
+              return responseUtil.badRequest(response, 'ERROR File does not exist');
             }
           });
         }
     )
     .catch((error) => {
-        return responseUtil.contentNotFound('File Not Found', response);
+        return responseUtil.contentNotFound(response, 'File Not Found');
     });
 };
 
@@ -48,6 +48,6 @@ module.exports.deleteFile = function(request, response) {
         return responseUtil.noContent(response);
      })
     .catch((error) => { 
-        return responseUtil.contentNotFound('File Not Found', response);
+        return responseUtil.contentNotFound(response, 'File Not Found');
      });
 }

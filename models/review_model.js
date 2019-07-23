@@ -1,29 +1,31 @@
 const mongoose = require('mongoose');
 
-const CommentSchema = mongoose.Schema({
-    content: {
-        type: String,
-        required: true
-    },
-    user: {
+const ReviewSchema = mongoose.Schema({
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    moment: {
+    activityId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Moment',
+        ref: 'Activity',
         required: true
-    }
+    },
+    content: {
+        type: String
+    },
+    images: [{
+        type: String
+    }]
 });
 
-// Export Comment model
-const Comment = module.exports = mongoose.model('Comment', CommentSchema);
+// Export Review model
+const Review = module.exports = mongoose.model('Review', ReviewSchema);
 
-// Add, save Comment
-module.exports.save = function(comment) {
+// Save review
+module.exports.save = function(review) {
     let save = new Promise((resolve, reject) => {
-        comment.save((error, result) => {
+        review.save((error, result) => {
             if (error) {
                 reject(error);
             }

@@ -11,30 +11,37 @@ module.exports.getBasicInfo = function(request, response) {
     User.getUserByUsername(username)
     .then(
         (user) => { sendUserBasicInfo(response, user); },
-        (error) => { sendError(response, error ); }
+        (error) => { sendError(response, error); }
         );
-}
+};
 
-// Decode tken
-// Query user, return following
-module.exports.getFollowing = function(request, response) {
+// Decode token
+// Query user, return friend list
+module.exports.getFriends = function(request, response) {
     let username = decode(request.headers['authorization']).username;
     User.getUserByUsername(username)
-    .then(
-        (user) => { sendUserFollowings(response, user); },
-        (error) => { sendError(response, error ); }
-    );
+    .then((user) => {
+        responseUtil.contentFound(response, user.friends);
+    })
+    .catch((error) => {
+        responseUtil.badRequest(response, error);
+    });
+};
+
+module.exports.getFriendRequest = function(request, response) {
+    let user = decode(request.headers['authorization']);
+    User.getUserById(user._id)
+    .then((user) => {
+        responseUtil.contentFound(response, user.friendRequests);
+    })
+    .catch((error) => {
+        responseUtil.badRequest(response, error);
+    });
 }
 
-// Query user, return follower
-module.exports.getFollower = function(request, response) {
-    let username = decode(request.headers['authorization']).username;
-    User.getUserByUsername(username)
-    .then(
-        (user) => { sendUserFollowers(response, user); },
-        (error) => { sendError(response, error ); }
-    );
-}
+module.exports.isLoggedIn = function(request, repsonse) {
+    responseUtil.requestAccepted(response, 'Token not expired yet');
+};
 
 // Helper function to respond basic information
 function sendUserBasicInfo(response, user) {
@@ -42,19 +49,10 @@ function sendUserBasicInfo(response, user) {
         username: user.username,
         firstname: user.firstname ? user.firstname : "",
         lastname: user.lastname ? user.lastname : "",
-        email: user.email
+        email: user.email,
+        _id: user._id
     };
     return responseUtil.contentFound(response, result);
-}
-
-// Helper function to respond followings
-function sendUserFollowings(response, user) {
-    return responseUtil.contentFound(response,  {following: user.following });
-}
-
-// Helper function to respond followers
-function sendUserFollowers(response, user) {
-    return responseUtil.contentFound(response, { follower: user.follower });
 }
 
 // Helper function respondes with error information
