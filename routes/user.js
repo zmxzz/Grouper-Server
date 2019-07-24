@@ -11,6 +11,11 @@ const ActivityPostHandler = require('../handlers/activity_post_handler');
 const ActivityDeleteHandler = require('../handlers/activity_delete_handler');
 const ReviewPostHandler = require('../handlers/review_post_handler');
 // GET Methods -----------------------------------------------------
+router.get('/test', (request, response) => {
+    response.json({
+        success: true
+    });
+});
 router.get('/info', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.getBasicInfo(request, response);
 });

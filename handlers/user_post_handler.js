@@ -19,11 +19,9 @@ module.exports.register = function(user, response) {
     .then((hash) => {
         // Set user's password as hash, then save it to database
         user.password = hash;
-        return User.register(user);
-    })
-    .then((user) => {
         // Successfully created, respond with 200 status code
-        return responseUtil.contentCreated(response, user);
+        responseUtil.contentCreated(response, user);
+        User.register(user);
     })
     .catch((error) => {
         // Bad request, respond with 400 status code
