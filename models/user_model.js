@@ -119,4 +119,19 @@ module.exports.getUserById = function(id) {
         });
     });
     return find;
+};
+
+// Add all the users into database
+module.exports.saveAll = function(userList) {
+    let saveAll = new Promise((resolve, reject) => {
+        User.insertMany(userList, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        });
+    });
+    return saveAll;
 }

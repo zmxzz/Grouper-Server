@@ -21,7 +21,7 @@ module.exports.register = function(user, response) {
         user.password = hash;
         // Successfully created, respond with 200 status code
         responseUtil.contentCreated(response, user);
-        User.register(user);
+        return user;
     })
     .catch((error) => {
         // Bad request, respond with 400 status code

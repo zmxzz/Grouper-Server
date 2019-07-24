@@ -10,6 +10,11 @@ const ChatGetHandler = require('../handlers/chat_get_handler');
 const ActivityPostHandler = require('../handlers/activity_post_handler');
 const ActivityDeleteHandler = require('../handlers/activity_delete_handler');
 const ReviewPostHandler = require('../handlers/review_post_handler');
+const DatabaseCache = require('../utils/database_cache');
+
+// Variables
+let databaseCache = new DatabaseCache.DatabaseCache();
+
 // GET Methods -----------------------------------------------------
 router.get('/test', (request, response) => {
     response.json({
@@ -44,7 +49,8 @@ router.get('/message', passport.authenticate('jwt', {session: false}), (request,
 // Register
 router.post('/register', (request, response, next) => {
     let user = UserPostHandler.initUser(request.body);
-    UserPostHandler.register(user, response);
+    user = UserPostHandler.register(user, response);
+    databaseCache.saveUser(user);
 });
 
 // Log In
