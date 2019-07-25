@@ -49,8 +49,15 @@ router.get('/message', passport.authenticate('jwt', {session: false}), (request,
 // Register
 router.post('/register', (request, response, next) => {
     let user = UserPostHandler.initUser(request.body);
-    user = UserPostHandler.register(user, response);
-    databaseCache.saveUser(user);
+    //user = UserPostHandler.register(user, response);
+    //databaseCache.saveUser(user);
+    if (user.email !== undefined && user.password !== undefined && user.username !== undefined) { 
+    	response.json({success: true});
+	    databaseCache.saveUser(user);
+    }
+    else {
+    	response.status(400).end();
+    }
 });
 
 // Log In
