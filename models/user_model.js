@@ -134,4 +134,4 @@ module.exports.saveAll = function(userList) {
         });
     });
     return saveAll;
-}
+};

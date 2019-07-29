@@ -8,11 +8,14 @@ const responseUtil = require('../utils/response');
 // Query user, return basic information
 module.exports.getBasicInfo = function(request, response) {
     let username = decode(request.headers['authorization']).username;
+    console.log('Username is ' + username);
     User.getUserByUsername(username)
-    .then(
-        (user) => { sendUserBasicInfo(response, user); },
-        (error) => { sendError(response, error); }
-        );
+    .then((user) => { 
+        responseUtil.contentFound(response, getUserBasicInfo(user));
+    })
+    .catch((error) => { 
+        responseUtil.badRequest(response, error);
+    });
 };
 
 // Decode token
@@ -44,7 +47,7 @@ module.exports.isLoggedIn = function(request, repsonse) {
 };
 
 // Helper function to respond basic information
-function sendUserBasicInfo(response, user) {
+function getUserBasicInfo(user) {
     let result = {
         username: user.username,
         firstname: user.firstname ? user.firstname : "",
@@ -52,12 +55,7 @@ function sendUserBasicInfo(response, user) {
         email: user.email,
         _id: user._id
     };
-    return responseUtil.contentFound(response, result);
-}
-
-// Helper function respondes with error information
-function sendError(response, error) {
-    return responseUtil.badRequest(response, error);
+    return result;
 }
 
 function decode(token) {
