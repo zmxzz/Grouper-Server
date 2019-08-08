@@ -29,6 +29,10 @@ router.get('/friendList', passport.authenticate('jwt', {session: false}), (reque
     UserGetHandler.getFriends(request, response);
 });
 
+router.get('/friendSuggestionList', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    UserGetHandler.getFriendSuggestionList(request, response);
+});
+
 router.get('/isLoggedIn', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.isLoggedIn(request, response);
 });
@@ -106,6 +110,11 @@ router.post('/postActivity',  passport.authenticate('jwt', {session: false}), (r
 // Join Activity
 router.post('/joinActivity',  passport.authenticate('jwt', {session: false}), (request, response, next) => {
     ActivityPostHandler.joinActivity(request, response);
+});
+
+// Quit Activity
+router.post('/quitActivity', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    ActivityPostHandler.quitActivity(request, response);
 });
 
 // Post Review

@@ -19,32 +19,27 @@ module.exports.postActivity = function(request, response) {
 };
 
 // Join an activity
-module.exports.joinActivity = function(request, response) {
+module.exports.joinActivity = async function(request, response) {
     // Get activity -> add user to partcipants
     let token = request.headers['authorization'];
     let user = decode(token);
-    Activity.getActivityById(request.body.activityId)
-    .then((activity) => {
-        // If activity is found and user is not in participant list, push user to the participant list
-        if (activity !== null && !activity.participants.includes(user._id)) {
-            activity.participants.push(user._id);
-            return Activity.save(activity);
-        }
-        else {
-            return Promise.resolve(null);
-        }
-    })
-    .then((activity) => {
-        if (activity !== null) {
-            responseUtil.requestAccepted(response, activity);
-        }
-        else {
-            responseUtil.contentNotFound(response, 'Activity does not exist');
-        }
-    })
-    .catch((error) => {
-        responseUtil.badRequest(error);
-    });
+    try {
+        await Activity.addParticipant(request.body.activityId, user._id);
+        responseUtil.noContent(response);
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
+};
+
+module.exports.quitActivity = async function(request, response) {
+    let token = request.headers['authorization'];
+    let user = decode(token);
+    try {
+        await Activity.removeParticipant(request.body.activityId, user._id);
+        responseUtil.noContent(response);
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
 };
 
 // Returns an object representing activity

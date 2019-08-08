@@ -135,3 +135,48 @@ module.exports.saveAll = function(userList) {
     });
     return saveAll;
 };
+
+// Add user's id to user's friend request
+module.exports.updateFriendRequest = function(userGettingRequest, userSendingRequest) {
+    return User.update({ _id: userGettingRequest }, {$push: {friendRequests: userSendingRequest }});
+};
+
+// Remove users' id from user's friend request
+module.exports.removeFriendRequest = function(userRemovingFriendRequest, userInFriendRequest) {
+    return User.update({ _id: userRemovingFriendRequest }, {$pullAll: { friendRequests: [userInFriendRequest] }});
+};
+
+// Remove users' id from each friend list
+module.exports.removeFriend = async function(userOne, userTwo) {
+    try {
+        await User.update({ _id: userOne }, {$pullAll: { friends: [userTwo] }});
+        await User.update({ _id: userTwo }, {$pullAll: { friends: [userOne] }});
+        Promise.resolve('User unfriended');
+    } catch (error) {
+        Promise.reject(error);
+    }
+}
+
+// Add users' id to each friend list
+module.exports.addFriend = async function(userOne, userTwo) {
+    try {
+        await User.update({ _id: userOne }, {$addToSet: { friends: userTwo }});
+        await User.update({ _id: userTwo }, {$addToSet: { friends: userOne }});
+        Promise.resolve('User added');
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+// Return 20 users that are not in user's friend list
+module.exports.getFriendSuggestionList = async function(userId) {
+    try {
+        return await User.find({
+            friends: { $nin : [userId] },
+            friendRequests: { $nin: [userId] },
+            _id: { $ne: userId }
+        }).limit(20).select('_id firstname lastname username');
+    } catch (error) {
+        Promise.reject(error);
+    }
+};

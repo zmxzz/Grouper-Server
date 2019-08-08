@@ -42,3 +42,14 @@ module.exports.save = function(moment) {
     });
     return save;
 };
+
+// Find moments by users' id list
+// userIdList: list of string representing user's id list
+module.exports.getMomentByUserIdList = async function(userIdList) {
+    const query = {user: { $in: userIdList }}
+    try {
+        return await Moment.find(query);
+    } catch (error) {
+        Promise.reject(error);
+    }
+}

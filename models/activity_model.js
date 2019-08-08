@@ -182,4 +182,24 @@ module.exports.deleteActivityById = function(activityId) {
           });
     });
     return deleteActivityById;
-}
+};
+
+// Add participant to the activity
+module.exports.addParticipant = async function(activityId, userId) {
+    try {
+        await Activity.update({ _id: activityId }, {$addToSet: { participants: userId }});
+        Promise.resolve('Pariticipant added');
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+// Remove participant from the activity
+module.exports.removeParticipant = async function(activityId, userId) {
+    try {
+        await Activity.update({ _id: activityId }, {$pullAll: { participants: [userId] }});
+        Promise.resolve();
+    } catch (error) {
+        Promise.reject(error);
+    }
+};

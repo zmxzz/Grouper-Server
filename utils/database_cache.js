@@ -33,7 +33,6 @@ module.exports.hasSetTimeoutForEncryptUser = function() {
 
 module.exports.setTimeoutForSaveUserList = function(callback) {
     DatabaseCache.hasSetTimeoutForSaveUser = true;
-    console.log('Saving');
     setTimeout(() => {
         DatabaseCache.hasSetTimeoutForSaveUser = false;
         callback();
@@ -42,9 +41,7 @@ module.exports.setTimeoutForSaveUserList = function(callback) {
 
 module.exports.setTimeoutForEncryptAndSave = function(callback) {
     DatabaseCache.hasSetTimeoutForEncryptUser = true;
-    console.log('Encrypting');
     setTimeout(() => {
-        console.log('Start Encrypting');
         DatabaseCache.hasSetTimeoutForEncryptUser = false;
         callback();
     }, 1000);

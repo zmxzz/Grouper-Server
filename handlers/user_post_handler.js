@@ -38,74 +38,73 @@ module.exports.authenticate = function(user, response) {
 };
 
 // Send request to add friend
-module.exports.sendFriendRequest = function(request, response) {
+module.exports.sendFriendRequest = async function(request, response) {
     // Ids of two users
     let userSendingRequest = decode(request.headers['authorization'])._id;
     let userGettingRequest = request.body.userId;
-    // Get user -> add request to request list -> save
-    User.getUserById(userGettingRequest)
-    .then((user) => {
-        user.friendRequests.push(userSendingRequest);
-        return User.save(user);
-    })
-    .then((result) => {
-        return responseUtil.requestAccepted(response, result);
-    })
-    .catch((error) => {
-        return responseUtil.badRequest(response, error);
-    });
+    // Update user's friend request list
+    try {
+        let userObjectGettingRequest = await User.getUserById(userGettingRequest);
+        if (userObjectGettingRequest.friends.includes(userSendingRequest)) {
+            throw 'User already added';
+        }
+        await User.updateFriendRequest(userGettingRequest, userSendingRequest);
+        responseUtil.requestAccepted(response, 'Friend request sent');
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
+};
+
+// Decline request to add friend
+module.exports.declineFriendRequest = async function(request, response) {
+    // Ids of two users
+    let userDecliningRequest = decode(request.headers['authorization'])._id;
+    let userGettingDeclined = request.body.userId;
+    // Remove requests from user's request list
+    try {
+        await User.removeFriendRequest(userDecliningRequest, userGettingDeclined);
+        responseUtil.requestAccepted(response, 'Friend request declined');
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
 };
 
 // Accept request to add friend
-module.exports.acceptFriendRequest = function(request, response) {
+module.exports.acceptFriendRequest = async function(request, response) {
     // Ids of two users
     let userAcceptingRequest = decode(request.headers['authorization'])._id;
     let userToBeAdded = request.body.userId;
+    if (userToBeAdded === undefined || userToBeAdded === null) {
+        responseUtil.badRequest(response, 'User undefined');
+        return;
+    }
     // Get user -> add friend to both -> save
-    User.getUserById(userAcceptingRequest)
-    .then((user) => {
-        if (user.friendRequests.includes(userToBeAdded) && !user.friends.includes(userToBeAdded)) {
-            arrays.removeAll(user.friendRequests, userToBeAdded);
-            addFriend(userAcceptingRequest, userToBeAdded);
-            return User.save(user);
+    try {
+        let user = await User.getUserById(userAcceptingRequest);
+        if (user.friends.includes(userToBeAdded)) {
+            throw 'User already added';
         }
         else {
-            // If the user is not being asked, he has no right to add friend
-            return Promise.resolve(null);
+            await User.removeFriendRequest(userAcceptingRequest, userToBeAdded);
+            await User.addFriend(userAcceptingRequest, userToBeAdded);
+            responseUtil.requestAccepted(response, 'User added');
         }
-    })
-    .then((result) => {
-        // if result is null, respond with forbidden, otherwise, respond with user
-        if (result === null) {
-            responseUtil.forbidden(response, 'No access right');
-        }
-        else {
-            responseUtil.requestAccepted(response, result);
-        }
-    })
-    .catch((error) => {
+    } catch (error) {
         responseUtil.badRequest(response, error);
-    });
+    }
 };
 
 // Unfriend a user
-module.exports.unfriend = function(request, response) {
+module.exports.unfriend = async function(request, response) {
     let userDeletingFriend = decode(request.headers['authorization'])._id;
     let userGettingDeleted = request.body.userId;
     // Get userDeletingFriend -> check if target is in the friend list -> delete user from both sides
-    User.getUserById(userDeletingFriend)
-    .then((user) => {
-        if (user.friends.includes(userGettingDeleted)) {
-            deleteFriends(userDeletingFriend, userGettingDeleted);
-            responseUtil.requestAccepted(response, user);
-        }
-        else {
-            responseUtil.forbidden(response, 'User is not friend');
-        }
-    })
-    .catch((error) => {
+    try {
+        await User.removeFriend(userDeletingFriend, userGettingDeleted);
+        responseUtil.requestAccepted(response, 'User unfriended');
+    } catch (error) {
         responseUtil.badRequest(response, error);
-    });
+    }
 };
 
 // Helper function for getting password from users' list
@@ -196,26 +195,6 @@ function deleteFriends(userDeletingFriend, userGettingDeleted) {
     });   
 }
 
-// parameters: two ids of each user
-function addFriend(userAcceptingRequest, userToBeAdded) {
-    User.getUserById(userAcceptingRequest)
-    .then((user) => {
-        user.friends.push(userToBeAdded);
-        return User.save(user);
-    })
-    .catch((error) => {
-        console.log(error);
-    });
-    User.getUserById(userToBeAdded)
-    .then((user) => {
-        user.friends.push(userAcceptingRequest);
-        return User.save(user);
-    })
-    .catch((error) => {
-        console.log(error);
-    });
-}
-
 // generate encrypted password with salt
 // asynchronous function after creating user
 // function encryptPassword(password) {
@@ -242,6 +221,8 @@ function getInfo(body) {
     return {
         "name": body.name,
         "email": body.email,
+        "firstname": body.firstname,
+        'lastname': body.lastname,
         "username": body.username,
         "password": body.password
     };

@@ -24,6 +24,9 @@ module.exports.requestEncryption = async function(passwordList) {
 
 // Compare login password with user's password and get token if the password is valid
 module.exports.requestAuthenticate = async function(user, unencryptedPassword) {
+    user.friends = [];
+    user.friendRequests = [];
+    user.chats = [];
     let body = {
         user: user,
         unencryptedPassword: unencryptedPassword

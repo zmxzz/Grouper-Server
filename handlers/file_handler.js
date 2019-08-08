@@ -1,53 +1,57 @@
+const fs = require('fs');
+const mkdirp = require('mkdirp');
 const files = require('../utils/files');
-const fileStream = require('fs');
 const responseUtil = require('../utils/response');
 
-module.exports.uploadFile = function(request, response) {
+module.exports.uploadFile = async function(request, response) {
     let date = new Date();
     let suffix = files.getSuffix(request.file.originalname);
-    let directory = files.generateDirectory(date);
-    let filename = files.generateFilename(date) + '.' + suffix;
-
-    // Put files to server
-    files.putFileToFileServer(request.file.buffer, directory, filename)
-    .then((result) => {
-        filename = directory + '/' + filename;
-        return responseUtil.contentCreated(response, filename);
-    })
-    .catch((error) => {
-        return responseUtil.badRequest(response, error);
-    });
+    let directory = '../files/' + files.generateDirectory(date);
+    let filename = directory + '/' + files.generateFilename(date) + '.' + suffix;
+    try {
+        await createDirectory(directory);
+        await writeFile(filename, request.file.buffer);
+        responseUtil.contentCreated(response, filename);
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
 };
 
 module.exports.downloadFile = function(request, response) {
-    files.getFileFromFileServer(request.query['filename'])
-    .then((cacheName) => {
-        fileStream.exists(cacheName, function(exists){
-            if (exists) {     
-              // Content-type is very interesting part that guarantee that
-              // Web browser will handle response in an appropriate manner.
-              response.writeHead(200, {
-                "Content-Type": "application/octet-stream",
-                "Content-Disposition": 'inline'
-              });
-              return fileStream.createReadStream(cacheName).pipe(response);
-            } else {
-              return responseUtil.badRequest(response, 'ERROR File does not exist');
-            }
-          });
-        }
-    )
-    .catch((error) => {
-        return responseUtil.contentNotFound(response, 'File Not Found');
-    });
+    try {
+        responseUtil.contentFound(response, fs.createReadStream(request.query['filename']));
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
 };
 
 module.exports.deleteFile = function(request, response) {
-    files.deleteFile(request.query['filename'])
-    .then(() => { 
-        return responseUtil.noContent(response);
-     })
-    .catch((error) => { 
-        return responseUtil.contentNotFound(response, 'File Not Found');
-     });
+}
+
+function writeFile(filename, buffer) {
+    let writeFile = new Promise((resolve, reject) => {
+        fs.writeFile(filename, buffer, (error) => {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+    return writeFile;
+}
+
+function createDirectory(directory) {
+    let createDirectory = new Promise((resolve, reject) => {
+        mkdirp(directory, function (error) {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+    return createDirectory;
 }

@@ -1,3 +1,3 @@
 module.exports = {
-    encryptionServer: 'http://3.15.151.91:3000/encrypt'
+    encryptionServer: 'http://10.0.1.49:3000/encrypt'
 };
