@@ -19,8 +19,13 @@ module.exports.uploadFile = async function(request, response) {
 
 module.exports.downloadFile = function(request, response) {
     try {
-        responseUtil.contentFound(response, fs.createReadStream(request.query['filename']));
+        let filename = request.query['filename'];
+        let dirs = filename.split('.');
+        response.writeHead(200, {'Content-Type': 'image/' + dirs[dirs.length - 1]});
+        let readStream = fs.createReadStream(filename);
+        readStream.pipe(response); 
     } catch (error) {
+        console.log(error);
         responseUtil.badRequest(response, error);
     }
 };

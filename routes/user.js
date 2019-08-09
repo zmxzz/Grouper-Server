@@ -21,6 +21,10 @@ router.get('/info', passport.authenticate('jwt', {session: false}), (request, re
     UserGetHandler.getBasicInfo(request, response);
 });
 
+router.get('/infoById', (request, response) => {
+    UserGetHandler.getBasicInfoById(request, response);
+});
+
 router.get('/friendRequest', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserGetHandler.getFriendRequest(request, response);
 })

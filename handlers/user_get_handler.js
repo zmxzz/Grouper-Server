@@ -29,6 +29,22 @@ module.exports.getBasicInfo = async function(request, response) {
     }
 };
 
+// Return firstname, lastname and username by the given user Id
+module.exports.getBasicInfoById = async function(request, response) {
+    let userId = request.query['userId'];
+    try {
+        let userInfo = await User.getUserById(userId);
+        let userBasicInfo = {
+            username: userInfo.username,
+            lastname: userInfo.lastname,
+            firstname: userInfo.firstname
+        };
+        responseUtil.contentFound(response, userBasicInfo);
+    } catch (error) {
+        responseUtil.badRequest(response, error);
+    }
+}
+
 // Decode token
 // Query user, return friend list
 module.exports.getFriends = function(request, response) {

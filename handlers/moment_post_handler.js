@@ -24,7 +24,7 @@ function getInfo(request) {
         user: decode(request.headers['authorization'])._id,
         images: request.body.images,
         content: request.body.content,
-        video: request.body.content,
+        video: request.body.video,
         likes: [],
         comments: []
     };

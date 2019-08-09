@@ -47,9 +47,30 @@ module.exports.save = function(moment) {
 // userIdList: list of string representing user's id list
 module.exports.getMomentByUserIdList = async function(userIdList) {
     const query = {user: { $in: userIdList }}
-    try {
-        return await Moment.find(query);
-    } catch (error) {
-        Promise.reject(error);
-    }
-}
+    let getMomentByUserIdList = new Promise((resolve, reject) => {
+        Moment.find(query, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        });
+    });
+    return getMomentByUserIdList;
+};
+
+// Find moments by a single user
+module.exports.getMomentByUserId = async function(userId) {
+    let getMomentByUser = new Promise((resolve, reject) => {
+        Moment.find({user: userId}, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+            }
+        });
+    });
+    return getMomentByUser;
+};
