@@ -22,15 +22,10 @@ const Comment = module.exports = mongoose.model('Comment', CommentSchema);
 
 // Add, save Comment
 module.exports.save = function(comment) {
-    let save = new Promise((resolve, reject) => {
-        comment.save((error, result) => {
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve(result);
-            }
-        });
-    });
-    return save;
+    return comment.save();
+};
+
+// Find comment by id
+module.exports.findCommentById = function(commentId) {
+    return Comment.findOne({ _id: commentId });
 };

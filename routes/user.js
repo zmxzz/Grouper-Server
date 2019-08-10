@@ -82,7 +82,7 @@ router.post('/postMoment', passport.authenticate('jwt', {session: false}), (requ
 
 
 // Comment
-router.post('/comment', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+router.post('/postComment', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     CommentPostHandler.comment(request, response);
 });
 

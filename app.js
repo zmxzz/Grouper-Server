@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const user = require('./routes/user');
 const file = require('./routes/file');
 const moment = require('./routes/moment');
+const comment = require('./routes/comment');
 const activity = require('./routes/activity');
 
 // Router Information
@@ -38,6 +39,7 @@ app.use('/user', user);
 app.use('/file', file);
 app.use('/activity', activity);
 app.use('/moment', moment);
+app.use('/comment', comment);
 
 
 // Passport Middleware

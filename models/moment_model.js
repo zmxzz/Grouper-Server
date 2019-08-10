@@ -74,3 +74,18 @@ module.exports.getMomentByUserId = async function(userId) {
     });
     return getMomentByUser;
 };
+
+// Add comment to the moment
+module.exports.addComment = async function(momentId, commentId) {
+    return Moment.update({ _id: momentId }, { $addToSet: { comments: commentId } });
+}
+
+// Put userId into likes list
+module.exports.like = async function(userId, momentId) {
+    return Moment.update({ _id: momentId }, { $addToSet: { likes: userId } });
+};
+
+// Remove userId from likes list
+module.exports.unlike = async function(userId, momentId) {
+    return Moment.update({ _id: momentId }, { $pullAll: { likes: [userId] } });
+};

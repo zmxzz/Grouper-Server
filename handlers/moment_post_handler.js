@@ -17,6 +17,26 @@ module.exports.postMoment = function(request, response) {
     });
 };
 
+// Add like to moment
+module.exports.like = function(request, response) {
+    let userInfo = decode(request.headers['authorization']);
+    Moment.like(userInfo._id, request.body.momentId)
+    .then(responseUtil.requestAccepted(response, 'Success'))
+    .catch((error) => {
+        responseUtil.badRequest(response, error);
+    });
+};
+
+// Remove userID from moment's like list
+module.exports.unlike = function(request, response) {
+    let userInfo = decode(request.headers['authorization']);
+    Moment.unlike(userInfo._id, request.body.momentId)
+    .then(responseUtil.requestAccepted(response, 'Success'))
+    .catch((error) => {
+        responseUtil.badRequest(response, error);
+    });
+};
+
 // Gather information to create moment object
 function getInfo(request) {
     let body = request.body;
