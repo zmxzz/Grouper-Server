@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const responseUtil = require('../utils/response');
 
 module.exports.getInfo = function(request, response) {
+    if (request.query['commentId'] === undefined) {
+        responseUtil.badRequest(response, 'Comment id undefined');
+    }
     Comment.findCommentById(request.query['commentId'])
     .then((result) => {
         responseUtil.contentFound(response, result);

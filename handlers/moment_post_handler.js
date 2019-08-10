@@ -5,6 +5,10 @@ const config = require('../config/database');
 
 // Add new moment to database
 module.exports.postMoment = function(request, response) {
+    if (request.body.content === undefined || request.body.content === '') {
+        responseUtil.badRequest(response, 'Moment is undefined or empty');
+        return;
+    }
     // Initialize a new moment object
     let moment = new Moment(getInfo(request));
     // 200 for success create, 400 for error
@@ -20,6 +24,10 @@ module.exports.postMoment = function(request, response) {
 // Add like to moment
 module.exports.like = function(request, response) {
     let userInfo = decode(request.headers['authorization']);
+    if (userInfo._id === undefined || request.body.momentId === undefined) {
+        responseUtil.badRequest(response, 'Undefined');
+        return;
+    }
     Moment.like(userInfo._id, request.body.momentId)
     .then(responseUtil.requestAccepted(response, 'Success'))
     .catch((error) => {
@@ -29,6 +37,10 @@ module.exports.like = function(request, response) {
 
 // Remove userID from moment's like list
 module.exports.unlike = function(request, response) {
+    if (request.body.momentId === undefined) {
+        responseUtil.badRequest(response, 'Moment Undefined');
+        return;
+    }
     let userInfo = decode(request.headers['authorization']);
     Moment.unlike(userInfo._id, request.body.momentId)
     .then(responseUtil.requestAccepted(response, 'Success'))

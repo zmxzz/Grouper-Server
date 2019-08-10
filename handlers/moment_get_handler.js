@@ -5,6 +5,10 @@ const config = require('../config/database');
 
 // get moments posted by the given user id
 module.exports.getMomentBySingleUser = async function(request, response) {
+    if (request.query['userId'] === undefined) {
+        responseUtil.badRequest(response, 'User Undefined');
+        return;
+    }
     let userId = request.query['userId'];
     try {
         let moment = await Moment.getMomentByUserId(userId);

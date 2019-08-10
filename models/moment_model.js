@@ -48,7 +48,7 @@ module.exports.save = function(moment) {
 module.exports.getMomentByUserIdList = async function(userIdList) {
     const query = {user: { $in: userIdList }}
     let getMomentByUserIdList = new Promise((resolve, reject) => {
-        Moment.find(query, (error, result) => {
+        Moment.find(query).sort({ _id: -1 }).exec((error, result) => {
             if (error) {
                 reject(error);
             }

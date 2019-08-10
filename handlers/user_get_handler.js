@@ -31,6 +31,10 @@ module.exports.getBasicInfo = async function(request, response) {
 
 // Return firstname, lastname and username by the given user Id
 module.exports.getBasicInfoById = async function(request, response) {
+    if (request.query['userId'] === undefined) {
+        responseUtil.badRequest(response, 'User Undefined');
+        return;
+    }
     let userId = request.query['userId'];
     try {
         let userInfo = await User.getUserById(userId);

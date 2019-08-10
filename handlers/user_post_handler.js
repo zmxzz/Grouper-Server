@@ -39,6 +39,10 @@ module.exports.authenticate = function(user, response) {
 
 // Send request to add friend
 module.exports.sendFriendRequest = async function(request, response) {
+    if (request.body.userId === undefined) {
+        responseUtil.badRequest(response, 'Adding undefined user');
+        return;
+    }
     // Ids of two users
     let userSendingRequest = decode(request.headers['authorization'])._id;
     let userGettingRequest = request.body.userId;
@@ -96,6 +100,10 @@ module.exports.acceptFriendRequest = async function(request, response) {
 
 // Unfriend a user
 module.exports.unfriend = async function(request, response) {
+    if (request.body.userId === undefined) {
+        responseUtil.badRequest(response, 'Removing Friend Undefined');
+        return;
+    }
     let userDeletingFriend = decode(request.headers['authorization'])._id;
     let userGettingDeleted = request.body.userId;
     // Get userDeletingFriend -> check if target is in the friend list -> delete user from both sides

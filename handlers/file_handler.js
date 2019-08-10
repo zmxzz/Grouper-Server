@@ -4,6 +4,10 @@ const files = require('../utils/files');
 const responseUtil = require('../utils/response');
 
 module.exports.uploadFile = async function(request, response) {
+    if (request.file === undefined) {
+        responseUtil.badRequest(response, 'File Undefined');
+        return;
+    }
     let date = new Date();
     let suffix = files.getSuffix(request.file.originalname);
     let directory = '../files/' + files.generateDirectory(date);
@@ -18,6 +22,10 @@ module.exports.uploadFile = async function(request, response) {
 };
 
 module.exports.downloadFile = function(request, response) {
+    if (request.query['filename'] === undefined) {
+        responseUtil.badRequest(response, 'Filename Undefined');
+        return;
+    }
     try {
         let filename = request.query['filename'];
         let dirs = filename.split('.');

@@ -5,6 +5,10 @@ const responseUtil = require('../utils/response');
 
 // Post an activity
 module.exports.postActivity = function(request, response) {
+    if (request.body.activityName === undefined) {
+        responseUtil.badRequest(response, 'Activity Undefined');
+        return;
+    }
     // Create a new activity object
     let activity = new Activity(getInfo(request));
     // Save it to database
@@ -20,6 +24,10 @@ module.exports.postActivity = function(request, response) {
 
 // Join an activity
 module.exports.joinActivity = async function(request, response) {
+    if (request.body.activityId === undefined) {
+        responseUtil.badRequest(response, 'Activity Undefined');
+        return;
+    }
     // Get activity -> add user to partcipants
     let token = request.headers['authorization'];
     let user = decode(token);
@@ -32,6 +40,10 @@ module.exports.joinActivity = async function(request, response) {
 };
 
 module.exports.quitActivity = async function(request, response) {
+    if (request.body.activityId === undefined) {
+        responseUtil.badRequest(response, 'Activity Undefined');
+        return;
+    }
     let token = request.headers['authorization'];
     let user = decode(token);
     try {
