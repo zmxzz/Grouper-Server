@@ -60,6 +60,11 @@ router.post('/login', (request, response, next) => {
     UserPostHandler.authenticate(request.body, response);
 });
 
+// Set bio
+router.post('/bio', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    UserPostHandler.setBio(request, response);
+});
+
 // Request to add friend
 router.post('/sendFriendRequest', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserPostHandler.sendFriendRequest(request, response);
@@ -68,6 +73,11 @@ router.post('/sendFriendRequest', passport.authenticate('jwt', {session: false})
 // Accept request to add friend
 router.post('/acceptFriendRequest', passport.authenticate('jwt', {session: false}), (request, response, next) => {
     UserPostHandler.acceptFriendRequest(request, response);
+});
+
+// Decline request to add friend
+router.post('/declineFriendRequest', passport.authenticate('jwt', {session: false}), (request, response, next) => {
+    UserPostHandler.declineFriendRequest(request, response);
 });
 
 // Delete friend

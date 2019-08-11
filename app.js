@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const config = require('./config/database');
 
 // Connecting to database configged at config/database.js
-mongoose.connect(config.database, { useNewUrlParser: true });
+mongoose.connect(config.database, { useNewUrlParser: true, useFindAndModify: false});
 mongoose.connection.on('connected', () => {
     console.log('Connected to database ' + config.database);
 });

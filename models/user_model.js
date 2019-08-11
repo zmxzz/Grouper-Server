@@ -83,6 +83,11 @@ module.exports.save = function(user) {
     return save;
 };
 
+// update bio
+module.exports.updateBio = function(userId, bio) {
+    return User.findOneAndUpdate({_id: userId}, {bio: bio});
+}
+
 // Find user by username
 module.exports.getUserByUsername = function(username) {
     const query = { username: username };

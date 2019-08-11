@@ -156,7 +156,7 @@ module.exports.getActivityById = function(activityId) {
 module.exports.getActivityByOrganizerIdList = function(organizerIdList) {
     let getActivityByOrganizerIdList = new Promise((resolve, reject) => {
         const query = {organizer: { $in: organizerIdList}};
-        Activity.find(query, (error, result) => {
+        Activity.find(query).sort({ _id: -1 }).exec((error, result) => {
             if (error) {
                 reject(error);
             }

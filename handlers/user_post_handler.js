@@ -37,6 +37,22 @@ module.exports.authenticate = function(user, response) {
     });
 };
 
+// Set bio
+module.exports.setBio = async function(request, response) {
+    if (request.body.bio === undefined) {
+        responseUtil.badRequest(response, 'Bio Undefined');
+        return;
+    }
+    let userInfo = decode(request.headers['authorization']);
+    User.updateBio(userInfo._id, request.body.bio)
+    .then(() => {
+        responseUtil.requestAccepted(response, 'Bio updated');
+    })
+    .catch((error) => {
+        responseUtil.badRequest(response, error);
+    });
+}
+
 // Send request to add friend
 module.exports.sendFriendRequest = async function(request, response) {
     if (request.body.userId === undefined) {

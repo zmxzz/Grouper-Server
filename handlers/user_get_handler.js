@@ -41,7 +41,8 @@ module.exports.getBasicInfoById = async function(request, response) {
         let userBasicInfo = {
             username: userInfo.username,
             lastname: userInfo.lastname,
-            firstname: userInfo.firstname
+            firstname: userInfo.firstname,
+            bio: userInfo.bio
         };
         responseUtil.contentFound(response, userBasicInfo);
     } catch (error) {
